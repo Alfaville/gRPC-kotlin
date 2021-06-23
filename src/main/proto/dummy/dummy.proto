@@ -5,6 +5,19 @@ package dummy;
 option java_package = "com.proto.dummy";
 option java_multiple_files = true;
 
-message DummyMessage {}
+message Greeting {
+    string first_name = 1;
+    string last_name = 2;
+}
 
-service DummyService {}
+message GreetingRequest {
+    Greeting greeting = 1;
+}
+
+message GreetingResponse {
+    string result = 1;
+}
+
+service GreetService {
+    rpc Greet(GreetingRequest) returns (GreetingResponse) {};
+}
