@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package dummy;
+
+option java_package = "com.proto.calculator";
+option java_multiple_files = true;
+
+message Calculator {
+    int64 x = 1;
+    int64 y = 2;
+}
+
+message CalculatorRequest {
+    Calculator calculator = 1;
+}
+
+message CalculatorResponse {
+    int64 result = 1;
+}
+
+message CalculatorManyTimesRequest {
+    Calculator calculator = 1;
+}
+message CalculatorManyTimesResponse {
+    int64 result = 1;
+}
+
+message PrimeNumber {
+    int64 x = 1;
+}
+
+message PrimeNumberDecompositionRequest {
+    PrimeNumber primeNumber = 1;
+}
+message PrimeNumberDecompositionResponse {
+    int64 result = 1;
+}
+
+service CalculatorService {
+    rpc Calculator(CalculatorRequest) returns (CalculatorResponse) {};
+
+    rpc CalculatorManyTimes(CalculatorManyTimesRequest) returns (stream CalculatorManyTimesResponse) {};
+
+    rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (stream PrimeNumberDecompositionResponse) {};
+}

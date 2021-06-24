@@ -1,8 +1,11 @@
 package org.example.client
 
 import com.proto.calculator.Calculator
+import com.proto.calculator.CalculatorManyTimesRequest
 import com.proto.calculator.CalculatorRequest
 import com.proto.calculator.CalculatorServiceGrpc
+import com.proto.calculator.PrimeNumber
+import com.proto.calculator.PrimeNumberDecompositionRequest
 import com.proto.dummy.GreetServiceGrpc
 import com.proto.dummy.Greeting
 import com.proto.dummy.GreetingRequest
@@ -51,6 +54,24 @@ fun main(args: Array<String>) {
     val calculatorResponse = calculatorServiceGrpc.calculator(calculatorRequest)
 
     println("Result calculator: ${calculatorResponse.result}")
+
+    val calculatorManyTimesRequest = CalculatorManyTimesRequest.newBuilder()
+        .setCalculator(Calculator.newBuilder().setX(10).setY(5).build())
+        .build()
+
+    calculatorServiceGrpc.calculatorManyTimes(calculatorManyTimesRequest)
+        .forEachRemaining { println(it.result) }
+
+
+    println("-".repeat(10))
+    println("Prime Number Decompostion")
+
+    val primeNumberDecomposiotionRequest = PrimeNumberDecompositionRequest.newBuilder()
+        .setPrimeNumber(PrimeNumber.newBuilder().setX(120).build())
+        .build()
+
+    calculatorServiceGrpc.primeNumberDecomposition(primeNumberDecomposiotionRequest)
+        .forEachRemaining { println(it.result) }
 
     channel.shutdown()
 }
