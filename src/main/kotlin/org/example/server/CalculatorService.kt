@@ -5,6 +5,8 @@ import com.proto.calculator.CalculatorManyTimesResponse
 import com.proto.calculator.CalculatorRequest
 import com.proto.calculator.CalculatorResponse
 import com.proto.calculator.CalculatorServiceGrpc
+import com.proto.calculator.LongCalculatorRequest
+import com.proto.calculator.LongCalculatorResponse
 import com.proto.calculator.PrimeNumberDecompositionRequest
 import com.proto.calculator.PrimeNumberDecompositionResponse
 import io.grpc.stub.StreamObserver
@@ -68,4 +70,34 @@ class CalculatorService: CalculatorServiceGrpc.CalculatorServiceImplBase() {
         }
         responseObserver.onCompleted()
     }
+
+    override fun longCalculator(
+        responseObserver: StreamObserver<LongCalculatorResponse>
+    ): StreamObserver<LongCalculatorRequest> {
+
+        return object : StreamObserver<LongCalculatorRequest> {
+
+            var result = 0L
+            var count = 0
+            override fun onNext(value: LongCalculatorRequest) {
+                result += value.calculator.x
+                ++count
+            }
+
+            override fun onError(t: Throwable?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCompleted() {
+                responseObserver.onNext(
+                    LongCalculatorResponse.newBuilder()
+                        .setResult(result.div(count.toDouble()))
+                        .build()
+                )
+                responseObserver.onCompleted()
+            }
+
+        }
+    }
+
 }
