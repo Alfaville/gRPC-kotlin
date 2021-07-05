@@ -2,15 +2,18 @@ package org.example.client
 
 import com.proto.calculator.Calculator
 import com.proto.calculator.CalculatorManyTimesRequest
-import com.proto.calculator.CalculatorManyTimesResponse
 import com.proto.calculator.CalculatorRequest
 import com.proto.calculator.CalculatorServiceGrpc
+import com.proto.calculator.FindMaxNumberRequest
+import com.proto.calculator.FindMaxNumberResponse
 import com.proto.calculator.LongCalculatorRequest
 import com.proto.calculator.LongCalculatorResponse
 import com.proto.calculator.PrimeNumber
 import com.proto.calculator.PrimeNumberDecompositionRequest
 import com.proto.dummy.GreetServiceGrpc
 import com.proto.dummy.Greeting
+import com.proto.dummy.GreetingEveryoneRequest
+import com.proto.dummy.GreetingEveryoneResponse
 import com.proto.dummy.GreetingRequest
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
@@ -26,7 +29,9 @@ class Client {
             .build()
 //        doUnaryCall(channel)
 //        doServerStreamingCall(channel)
-        doClientStreamingCall(channel)
+//        doClientStreamingCall(channel)
+//        doBiStreamCall(channel)
+        doBiStreamCallMaxNumber(channel)
 
         channel.shutdown()
     }
@@ -98,24 +103,24 @@ class Client {
 
         val asyncClient = CalculatorServiceGrpc.newStub(channel)
         val requestObserver = asyncClient.longCalculator(object : StreamObserver<LongCalculatorResponse> {
-                override fun onNext(value: LongCalculatorResponse) {
-                    println("Received a response form the server")
-                    println("value: $value")
-                }
-
-                override fun onError(t: Throwable?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onCompleted() {
-                    latch.countDown()
-                }
-
+            override fun onNext(value: LongCalculatorResponse) {
+                println("Received a response form the server")
+                println("value: $value")
             }
+
+            override fun onError(t: Throwable?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCompleted() {
+                latch.countDown()
+            }
+
+        }
         )
 
         println("Sending messaging")
-        for(x in 1..4) {
+        for (x in 1..4) {
             requestObserver.onNext(
                 LongCalculatorRequest.newBuilder()
                     .setCalculator(Calculator.newBuilder().setX(x.toLong()).build())
@@ -125,6 +130,65 @@ class Client {
         //we tell the server that the client is done sending data
         requestObserver.onCompleted()
         latch.await(3L, TimeUnit.SECONDS)
+    }
+
+    private fun doBiStreamCall(channel: ManagedChannel) {
+        println("Do Bi streaming call")
+
+        val asyncClient = GreetServiceGrpc.newStub(channel)
+        val requestObserver = asyncClient.greetEveryone(object : StreamObserver<GreetingEveryoneResponse> {
+            override fun onNext(value: GreetingEveryoneResponse) {
+                println("Response from service ${value.result}")
+            }
+
+            override fun onError(t: Throwable?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCompleted() {
+                println("Server is done")
+            }
+        })
+
+        listOf("Felipe", "Alfa", "Marc", "Herbert", "Smith").forEach {
+            requestObserver.onNext(
+                GreetingEveryoneRequest.newBuilder()
+                .setGreeting(Greeting.newBuilder().setFirstName(it).build())
+                .build()
+            )
+        }
+        requestObserver.onCompleted()
+
+    }
+
+    private fun doBiStreamCallMaxNumber(channel: ManagedChannel) {
+        println("Do Bi streaming call")
+
+        val asyncClient = CalculatorServiceGrpc.newStub(channel)
+        val requestObserver = asyncClient.findMaxApiEveryone(object : StreamObserver<FindMaxNumberResponse> {
+            override fun onNext(value: FindMaxNumberResponse) {
+                println("Response from service ${value.maximum}")
+            }
+
+            override fun onError(t: Throwable?) {
+                println(t!!.message)
+            }
+
+            override fun onCompleted() {
+                println("Server is done")
+            }
+        })
+
+        listOf(3,5,17,9,8,30,12).forEach {
+            println("Number: $it")
+            requestObserver.onNext(
+                FindMaxNumberRequest.newBuilder()
+                .setNumber(it)
+                .build()
+            )
+        }
+        requestObserver.onCompleted()
+
     }
 
 }

@@ -5,10 +5,13 @@ import com.proto.calculator.CalculatorManyTimesResponse
 import com.proto.calculator.CalculatorRequest
 import com.proto.calculator.CalculatorResponse
 import com.proto.calculator.CalculatorServiceGrpc
+import com.proto.calculator.FindMaxNumberRequest
+import com.proto.calculator.FindMaxNumberResponse
 import com.proto.calculator.LongCalculatorRequest
 import com.proto.calculator.LongCalculatorResponse
 import com.proto.calculator.PrimeNumberDecompositionRequest
 import com.proto.calculator.PrimeNumberDecompositionResponse
+import com.proto.dummy.GreetingEveryoneRequest
 import io.grpc.stub.StreamObserver
 
 class CalculatorService: CalculatorServiceGrpc.CalculatorServiceImplBase() {
@@ -84,7 +87,7 @@ class CalculatorService: CalculatorServiceGrpc.CalculatorServiceImplBase() {
                 ++count
             }
 
-            override fun onError(t: Throwable?) {
+            override fun onError(t: Throwable) {
                 TODO("Not yet implemented")
             }
 
@@ -92,6 +95,43 @@ class CalculatorService: CalculatorServiceGrpc.CalculatorServiceImplBase() {
                 responseObserver.onNext(
                     LongCalculatorResponse.newBuilder()
                         .setResult(result.div(count.toDouble()))
+                        .build()
+                )
+                responseObserver.onCompleted()
+            }
+
+        }
+    }
+
+    override fun findMaxApiEveryone(
+        responseObserver: StreamObserver<FindMaxNumberResponse>
+    ): StreamObserver<FindMaxNumberRequest> {
+
+        println("find Max Api Everyone")
+        return object: StreamObserver<FindMaxNumberRequest> {
+
+            val currentMaximum = 0
+
+            override fun onNext(value: FindMaxNumberRequest) {
+                var currentNumber = value.number
+                if(currentNumber > currentMaximum) {
+                    currentNumber = currentMaximum
+                    responseObserver.onNext(
+                        FindMaxNumberResponse.newBuilder()
+                            .setMaximum(currentNumber)
+                            .build()
+                    )
+                }
+            }
+
+            override fun onError(t: Throwable) {
+                responseObserver.onCompleted()
+            }
+
+            override fun onCompleted() {
+                responseObserver.onNext(
+                    FindMaxNumberResponse.newBuilder()
+                        .setMaximum(currentMaximum)
                         .build()
                 )
                 responseObserver.onCompleted()
