@@ -16,8 +16,11 @@ import com.proto.dummy.Greeting
 import com.proto.dummy.GreetingEveryoneRequest
 import com.proto.dummy.GreetingEveryoneResponse
 import com.proto.dummy.GreetingRequest
+import com.proto.dummy.GreetingWithDeadlineRequest
+import io.grpc.Deadline
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
+import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.CountDownLatch
@@ -34,7 +37,8 @@ class Client {
 //        doClientStreamingCall(channel)
 //        doBiStreamCall(channel)
 //        doBiStreamCallMaxNumber(channel)
-        errorCall(channel)
+//        errorCall(channel)
+        doUnaryCallWithDeadline(channel)
 
         channel.shutdown()
     }
@@ -206,6 +210,47 @@ class Client {
             println("Go an exception for square root!")
             e.printStackTrace()
         }
+    }
+
+    private fun doUnaryCallWithDeadline(channel: ManagedChannel) {
+        val blockingStub = GreetServiceGrpc.newBlockingStub(channel)
+
+        try {
+            println("Sending a request with a deadline of 3000 ms")
+            val response = blockingStub.withDeadline(
+                Deadline.after(3000, TimeUnit.MILLISECONDS)
+            ).greetWithDeadLines(
+                GreetingWithDeadlineRequest.newBuilder().setGreeting(
+                    Greeting.newBuilder().setFirstName("Felipe").build()
+                ).build()
+            )
+
+            println(response.result)
+        } catch (e: StatusRuntimeException) {
+            if(e.status == Status.DEADLINE_EXCEEDED) {
+                println("Deadline has been exceeded, we don't want the response")
+            } else
+                e.printStackTrace()
+        }
+
+        try {
+            println("Sending a request with a deadline of 100 ms")
+            val response = blockingStub.withDeadline(
+                Deadline.after(100, TimeUnit.MILLISECONDS)
+            ).greetWithDeadLines(
+                GreetingWithDeadlineRequest.newBuilder().setGreeting(
+                    Greeting.newBuilder().setFirstName("Alfaville").build()
+                ).build()
+            )
+
+            println(response.result)
+        } catch (e: StatusRuntimeException) {
+            if(e.status == Status.DEADLINE_EXCEEDED) {
+                println("Deadline has been exceeded, we don't want the response")
+            } else
+                e.printStackTrace()
+        }
+
     }
 
 }
