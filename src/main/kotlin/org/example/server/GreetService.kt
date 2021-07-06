@@ -1,18 +1,18 @@
 package org.example.server
 
-import com.proto.dummy.GreetServiceGrpc
-import com.proto.dummy.Greeting
-import com.proto.dummy.GreetingEveryoneRequest
-import com.proto.dummy.GreetingEveryoneResponse
-import com.proto.dummy.GreetingRequest
-import com.proto.dummy.GreetingResponse
-import com.proto.dummy.GreetingWithDeadlineRequest
-import com.proto.dummy.GreetingWithDeadlineResponse
+import com.proto.greeting.GreetServiceGrpc
+import com.proto.greeting.Greeting
+import com.proto.greeting.GreetingEveryoneRequest
+import com.proto.greeting.GreetingEveryoneResponse
+import com.proto.greeting.GreetingRequest
+import com.proto.greeting.GreetingResponse
+import com.proto.greeting.GreetingWithDeadlineRequest
+import com.proto.greeting.GreetingWithDeadlineResponse
 import io.grpc.Context
 import io.grpc.stub.ServerCalls
 import io.grpc.stub.StreamObserver
 
-class GreetServiceImpl : GreetServiceGrpc.GreetServiceImplBase() {
+class GreetService : GreetServiceGrpc.GreetServiceImplBase() {
 
     override fun greet(
         request: GreetingRequest,

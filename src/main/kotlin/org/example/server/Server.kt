@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
     println("Starting gRPC");
 
     val server = ServerBuilder.forPort(50051)
-        .addService(GreetServiceImpl())
+        .addService(GreetService())
         .addService(CalculatorService())
         .build()
 
