@@ -11,8 +11,12 @@ import com.proto.calculator.LongCalculatorRequest
 import com.proto.calculator.LongCalculatorResponse
 import com.proto.calculator.PrimeNumberDecompositionRequest
 import com.proto.calculator.PrimeNumberDecompositionResponse
-import com.proto.dummy.GreetingEveryoneRequest
+import com.proto.calculator.SquareRootRequest
+import com.proto.calculator.SquareRootResponse
+import io.grpc.Status
+import io.grpc.stub.ServerCalls
 import io.grpc.stub.StreamObserver
+import kotlin.math.sqrt
 
 class CalculatorService: CalculatorServiceGrpc.CalculatorServiceImplBase() {
 
@@ -137,6 +141,29 @@ class CalculatorService: CalculatorServiceGrpc.CalculatorServiceImplBase() {
                 responseObserver.onCompleted()
             }
 
+        }
+    }
+
+    override fun squareRoot(
+        request: SquareRootRequest,
+        responseObserver: StreamObserver<SquareRootResponse>
+    ) {
+        val number = request.number
+        if(number >= 0) {
+            val numberRoot = sqrt(number.toDouble())
+            responseObserver.onNext(
+                SquareRootResponse.newBuilder()
+                    .setNumberRoot(numberRoot)
+                    .build()
+            )
+        } else {
+            // we construct the exception
+            responseObserver.onError(
+                Status.INVALID_ARGUMENT
+                    .withDescription("The number being send is not positive")
+                    .augmentDescription("The number: $number")
+                    .asRuntimeException()
+            )
         }
     }
 

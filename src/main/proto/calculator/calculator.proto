@@ -46,8 +46,17 @@ message LongCalculatorResponse {
 message FindMaxNumberRequest {
     int32 number = 1;
 }
+
 message FindMaxNumberResponse {
     int32 maximum = 1;
+}
+
+message SquareRootRequest {
+    int32 number = 1;
+}
+
+message SquareRootResponse {
+    double number_root = 1;
 }
 
 service CalculatorService {
@@ -60,4 +69,8 @@ service CalculatorService {
     rpc LongCalculator(stream LongCalculatorRequest) returns (LongCalculatorResponse) {};
 
     rpc FindMaxApiEveryone(stream FindMaxNumberRequest) returns (stream FindMaxNumberResponse) {};
+
+    //error handle
+    //this grpc will throw an exception if the send number is negative
+    rpc SquareRoot(SquareRootRequest) returns (SquareRootResponse) {};
 }

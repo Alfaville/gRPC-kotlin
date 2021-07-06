@@ -10,6 +10,7 @@ import com.proto.calculator.LongCalculatorRequest
 import com.proto.calculator.LongCalculatorResponse
 import com.proto.calculator.PrimeNumber
 import com.proto.calculator.PrimeNumberDecompositionRequest
+import com.proto.calculator.SquareRootRequest
 import com.proto.dummy.GreetServiceGrpc
 import com.proto.dummy.Greeting
 import com.proto.dummy.GreetingEveryoneRequest
@@ -17,6 +18,7 @@ import com.proto.dummy.GreetingEveryoneResponse
 import com.proto.dummy.GreetingRequest
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
+import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -31,7 +33,8 @@ class Client {
 //        doServerStreamingCall(channel)
 //        doClientStreamingCall(channel)
 //        doBiStreamCall(channel)
-        doBiStreamCallMaxNumber(channel)
+//        doBiStreamCallMaxNumber(channel)
+        errorCall(channel)
 
         channel.shutdown()
     }
@@ -189,6 +192,20 @@ class Client {
         }
         requestObserver.onCompleted()
 
+    }
+
+    private fun errorCall(channel: ManagedChannel) {
+        val blockingStub = CalculatorServiceGrpc.newBlockingStub(channel)
+        val number = -1
+
+        try {
+            blockingStub.squareRoot(
+                SquareRootRequest.newBuilder().setNumber(number).build()
+            )
+        } catch (e: StatusRuntimeException) {
+            println("Go an exception for square root!")
+            e.printStackTrace()
+        }
     }
 
 }
