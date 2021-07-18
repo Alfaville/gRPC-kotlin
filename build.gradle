@@ -14,7 +14,7 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
-    implementation "io.grpc:grpc-netty-shaded:$gRPCprotobufVersion"
+    implementation "io.grpc:grpc-netty-shaded:$gRPCprotobufVersion" //shared: includes SSL libraries
     implementation "io.grpc:grpc-protobuf:$gRPCprotobufVersion"
     implementation "io.grpc:grpc-stub:$gRPCprotobufVersion"
     compileOnly "org.apache.tomcat:annotations-api:$tomcarApiVersion"
@@ -26,7 +26,7 @@ protobuf {
     }
     plugins {
         grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:$gRPCprotobufVersion"
+            artifact = "io.grpc:protoc-gen-grpc-java:$googlePluginProtoBufferVersion"
         }
     }
     generateProtoTasks {

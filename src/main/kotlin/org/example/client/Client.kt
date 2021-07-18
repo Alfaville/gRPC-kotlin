@@ -22,23 +22,35 @@ import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
 import io.grpc.stub.StreamObserver
+import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 class Client {
 
     fun runGrpcClient() {
+        // Development environment
         val channel = ManagedChannelBuilder.forAddress("localhost", 50051)
             .usePlaintext() //not use this in prod
             .build()
-//        doUnaryCall(channel)
+
+        //production environment
+        //w=With server authentication SSL/TLS; custom CA root certification
+        val secureChannel = NettyChannelBuilder.forAddress("localhost", 50051)
+            .sslContext(GrpcSslContexts.forClient().trustManager(File("ssl/ca.crt")).build())
+            .build()
+
+//        doUnaryCall(secureChannel)
+        doUnaryCall(channel)
 //        doServerStreamingCall(channel)
 //        doClientStreamingCall(channel)
 //        doBiStreamCall(channel)
 //        doBiStreamCallMaxNumber(channel)
 //        errorCall(channel)
-        doUnaryCallWithDeadline(channel)
+//        doUnaryCallWithDeadline(channel)
 
         channel.shutdown()
     }
