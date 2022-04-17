@@ -19,19 +19,31 @@ dependencies {
     implementation "io.grpc:grpc-stub:$gRPCprotobufVersion"
     compileOnly "org.apache.tomcat:annotations-api:$tomcarApiVersion"
 }
-
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$googlePluginprotobufVersion"
+        artifact = "com.google.protobuf:protoc:${googlePluginProtoBufferVersion}"
+    }
+    generatedFilesBaseDir = "$projectDir/src/generated"
+    clean {
+        delete generatedFilesBaseDir
     }
     plugins {
         grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:$googlePluginProtoBufferVersion"
+            artifact = "io.grpc:protoc-gen-grpc-java:${gRPCprotobufVersion}"
         }
     }
     generateProtoTasks {
         all()*.plugins {
             grpc {}
         }
+    }
+}
+
+idea {
+    module {
+        sourceDirs += file("src/generated/main/java")
+        sourceDirs += file("src/generated/main/grpc")
+        generatedSourceDirs += file("src/generated/main/java")
+        generatedSourceDirs += file("src/generated/main/grpc")
     }
 }

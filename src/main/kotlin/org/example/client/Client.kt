@@ -39,14 +39,14 @@ class Client {
 
         //production environment
         //w=With server authentication SSL/TLS; custom CA root certification
-        val secureChannel = NettyChannelBuilder.forAddress("localhost", 50051)
-            .sslContext(GrpcSslContexts.forClient().trustManager(File("ssl/ca.crt")).build())
-            .build()
+//        val secureChannel = NettyChannelBuilder.forAddress("localhost", 50051)
+//            .sslContext(GrpcSslContexts.forClient().trustManager(File("ssl/ca.crt")).build())
+//            .build()
 
 //        doUnaryCall(secureChannel)
-        doUnaryCall(channel)
+//        doUnaryCall(channel)
 //        doServerStreamingCall(channel)
-//        doClientStreamingCall(channel)
+        doClientStreamingCall(channel)
 //        doBiStreamCall(channel)
 //        doBiStreamCallMaxNumber(channel)
 //        errorCall(channel)

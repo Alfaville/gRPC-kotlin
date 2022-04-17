@@ -92,7 +92,7 @@ class CalculatorService: CalculatorServiceGrpc.CalculatorServiceImplBase() {
             }
 
             override fun onError(t: Throwable) {
-                TODO("Not yet implemented")
+
             }
 
             override fun onCompleted() {
